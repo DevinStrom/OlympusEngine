@@ -15,7 +15,7 @@ INT		WindowHeight;
 //lpCmdLine = ability to put commands in at runtime
 //nCmdShow = command on whether to show window at beginning
 //removed variable names, will reference manually below
-int CALLBACK WinMain(HINSTANCE, HINSTANCE , LPSTR , INT) {
+int CALLBACK WinMain(HINSTANCE, HINSTANCE, LPSTR, INT) {
 	/*
 		three steps to show window on screen:
 		1 create window class
@@ -55,6 +55,7 @@ int CALLBACK WinMain(HINSTANCE, HINSTANCE , LPSTR , INT) {
 	wcex.hInstance = HInstance();
 
 	//instructions for how window will perform, resize, close, etc.
+	
 	wcex.lpfnWndProc = DefWindowProc;
 
 	RegisterClassEx(&wcex);

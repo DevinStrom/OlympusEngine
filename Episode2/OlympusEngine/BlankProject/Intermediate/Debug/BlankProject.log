@@ -1,2 +1,1 @@
-﻿  WinMain.cpp
-  BlankProject.vcxproj -> C:\Users\winco\Development\github\OlympusMons\OlympusEngine\Episode 1\OlympusEngine\Build\BlankProject\Debug\BlankProject.exe
+﻿LINK : fatal error LNK1168: cannot open C:\Users\winco\Development\github\OlympusMons\OlympusEngine\Episode2\OlympusEngine\\Build\BlankProject\Debug\BlankProject.exe for writing
