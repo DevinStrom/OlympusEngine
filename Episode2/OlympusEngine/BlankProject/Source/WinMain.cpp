@@ -130,7 +130,7 @@ VOID InitializeWindow() {
 	//check if window was successfully created, if not shut down program
 	if (!hWnd) {
 		MessageBox(0, L"Failed to Create Window!.", 0, 0);
-		return 0;
+		PostQuitMessage(0);
 	}
 
 	ShowWindow(hWnd, SW_SHOW);
