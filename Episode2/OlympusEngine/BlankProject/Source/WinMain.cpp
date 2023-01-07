@@ -1,7 +1,9 @@
-#include <windows.h>
+#include "pch.h"
 
-#define MAX_NAME_STRING 256
-#define HInstance() GetModuleHandle(NULL)
+//
+//global variables
+//
+#pragma region GlobalVariables
 
 WCHAR	WindowClass[MAX_NAME_STRING];
 WCHAR	WindowTitle[MAX_NAME_STRING];
@@ -9,13 +11,58 @@ WCHAR	WindowTitle[MAX_NAME_STRING];
 INT		WindowWidth;
 INT		WindowHeight;
 
+HICON	hIcon;
+
+#pragma endregion 
+
+
+//
+//Pre-Declarations
+//
+#pragma region Pre-Declarations
+
+VOID InitializeVariables();
+VOID CreateWindowClass();
+VOID InitializeWindow();
+VOID MessageLoop();
+
+#pragma endregion
+
+
+//function for window
+//must return LRESULT
+//uses CALLBACK macro
+//four parameters important fore every windows process
+//HWND = copy of windows hangle, instance of window that is running
+//UINT message = message type parameter (ex: windows close, or windows resize)
+//WPARAM wparam, LPARAM lparam = arguments for how message is received
+LRESULT CALLBACK WindowProcess(HWND hWnd, UINT message, WPARAM wparam, LPARAM lparam) {
+	
+	switch (message){
+		case WM_DESTROY: //once destroy message received, PostQuitMessage simply states please close the program
+			PostQuitMessage(0);
+			break;
+	}
+
+	return DefWindowProc(hWnd, message, wparam, lparam);
+}
+
+
+//
+//Operations
+//
+
+#pragma region Operations
+
+
+
 //entry point
 //input 1 HINSTANCE = representation of entire program that is running
 //HINSTANCE HPrevInstance= doesn't operate correctly on win 10 or 11, legacy stuff - removed
 //lpCmdLine = ability to put commands in at runtime
 //nCmdShow = command on whether to show window at beginning
 //removed variable names, will reference manually below
-int CALLBACK WinMain(HINSTANCE, HINSTANCE, LPSTR, INT) {
+int CALLBACK WinMain(HINSTANCE, HINSTANCE , LPSTR , INT) {
 	/*
 		three steps to show window on screen:
 		1 create window class
@@ -24,48 +71,62 @@ int CALLBACK WinMain(HINSTANCE, HINSTANCE, LPSTR, INT) {
 	*/
 
 	//initialize global variables
-	wcscpy_s(WindowClass, TEXT("TutorialOneClass"));
-	wcscpy_s(WindowTitle, TEXT("Our First Window"));
-	WindowWidth = 1366;
-	WindowHeight = 768;
+	InitializeVariables();
 	
 	//
 	//1 create window class
 	//
+	CreateWindowClass();
+
+	//
+	//2 create and display window
+	//
+	InitializeWindow();
+
+	//
+	//3 message listener/listen for message events
+	//
+	MessageLoop();
+
+	return 0;
+}
+
+//
+//functions
+//
+#pragma region Functions
+
+VOID InitializeVariables() {
+
+	LoadString(HInstance(), IDS_PERGAMENAME, WindowTitle, MAX_NAME_STRING);
+	LoadString(HInstance(), IDS_WINDOWCLASS, WindowClass, MAX_NAME_STRING);
+
+	WindowWidth = 1366;
+	WindowHeight = 768;
+	hIcon = LoadIcon(HInstance(), MAKEINTRESOURCE(IDI_MAINICON));
+}
+
+VOID CreateWindowClass() {
 	WNDCLASSEX wcex;
-
-	wcex.cbSize = sizeof(WNDCLASSEX); //size of our class 
-	wcex.style = CS_HREDRAW | CS_VREDRAW; //style has horizontal and verticle redraw
-	wcex.cbClsExtra = 0; //add extra memory at runtime
-	wcex.cbWndExtra = 0; //add extra memory at runtime
-
-	//cursor
+	wcex.cbSize = sizeof(WNDCLASSEX);
+	wcex.style = CS_HREDRAW | CS_VREDRAW;
+	wcex.cbClsExtra = 0;
+	wcex.cbWndExtra = 0;
 	wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
-	//background- default to white
 	wcex.hbrBackground = (HBRUSH)GetStockObject(NULL_BRUSH);
-
-	//icon
-	wcex.hIcon = LoadIcon(0, IDI_APPLICATION); //IDI_APPLICATION is default for windows
-	wcex.hIconSm = LoadIcon(0, IDI_APPLICATION);
-
+	wcex.hIcon = hIcon;
+	wcex.hIconSm = hIcon;
 	wcex.lpszClassName = WindowClass;
 	wcex.lpszMenuName = nullptr;
-
-	//reference to instance of program running
 	wcex.hInstance = HInstance();
-
-	//instructions for how window will perform, resize, close, etc.
-	
-	wcex.lpfnWndProc = DefWindowProc;
-
+	wcex.lpfnWndProc = WindowProcess;
 	RegisterClassEx(&wcex);
+}
 
-	//
-	//create and display window
-	//
+VOID InitializeWindow() {
 	HWND hWnd = CreateWindow(WindowClass, WindowTitle, WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, 0, WindowWidth, WindowHeight, nullptr, nullptr, HInstance(), nullptr);
-	
+
 	//check if window was successfully created, if not shut down program
 	if (!hWnd) {
 		MessageBox(0, L"Failed to Create Window!.", 0, 0);
@@ -73,10 +134,9 @@ int CALLBACK WinMain(HINSTANCE, HINSTANCE, LPSTR, INT) {
 	}
 
 	ShowWindow(hWnd, SW_SHOW);
+}
 
-	//
-	//message listener/listen for message events
-	//
+VOID MessageLoop() {
 	MSG msg = { 0 };
 	while (msg.message != WM_QUIT)
 	{
@@ -87,6 +147,6 @@ int CALLBACK WinMain(HINSTANCE, HINSTANCE, LPSTR, INT) {
 			DispatchMessage(&msg);
 		}
 	}
-
-	return 0;
 }
+
+#pragma endregion

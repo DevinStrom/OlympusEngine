@@ -1,4 +1,6 @@
 # OlympusEngine
 Code from OlympusMon Tutorials on YouTube
 
-left off 2:30 vid 2
+video 2
+2:30 
+wcex.lpfnWndProc = DefWindowProc   <-- DefWindowProc means deafult windows process, doesn't actually close program when x clicked on gui
